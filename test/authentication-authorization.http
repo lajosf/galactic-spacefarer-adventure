@@ -1,0 +1,85 @@
+# Base URL setting
+@baseUrl = http://localhost:4004
+
+############################################################################
+#                            POSITIVE TEST CASES                             #
+############################################################################
+
+# To read base64 encoded text: https://www.base64decode.org/ 
+
+### ------------------------------------------------------------------------
+# Admin retrieves all Spacefarers
+GET {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers
+Authorization: Basic YWRtaW5Ac3BhY2VmYXJlci5jb206cGFzc3dvcmQ=
+
+### ------------------------------------------------------------------------
+# Junior retrieves all Spacefarers
+GET {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers
+Authorization: Basic anVuaW9yQHNwYWNlLmNvbTpwYXNzd29yZA==
+
+### ------------------------------------------------------------------------
+# Admin creates a new Spacefarer
+POST {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers
+Authorization: Basic YWRtaW5Ac3BhY2VmYXJlci5jb206cGFzc3dvcmQ=
+Content-Type: application/json
+
+{
+    "name": "Test Spacefarer",
+    "email": "test6@spacefarer.com",
+    "password": "password",
+    "stardustCollection": 5,
+    "wormholeNavigationSkill": 3,
+    "originPlanet": "Earth",
+    "spacesuitColor": "Red",
+    "department_ID": "7dacdb28-0601-40f0-8c64-cd86732db1f0",
+    "position_ID": "40493cf4-e1af-4ca7-bbc1-941bd80bd97e"
+}
+
+############################################################################
+#                            NEGATIVE TEST CASES                             #
+############################################################################
+
+### ------------------------------------------------------------------------
+# Call without authentication (401 Unauthorized)
+GET {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers
+
+### ------------------------------------------------------------------------
+# Junior user tries to create a Spacefarer (403 Forbidden)
+POST {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers
+Authorization: Basic anVuaW9yQHNwYWNlLmNvbTpwYXNzd29yZA==
+Content-Type: application/json
+
+{
+    "name": "Test Spacefarer",
+    "email": "test@spacefarer.com",
+    "stardustCollection": 5,
+    "wormholeNavigationSkill": 3,
+    "originPlanet": "Earth",
+    "spacesuitColor": "Red",
+    "department_ID": "7dacdb28-0601-40f0-8c64-cd86732db1f0",
+    "position_ID": "40493cf4-e1af-4ca7-bbc1-941bd80bd97e"
+}
+
+### ------------------------------------------------------------------------
+# Using wrong password (401 Unauthorized)
+GET {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers
+Authorization: Basic YWRtaW5Ac3BhY2VmYXJlci5jb206d3JvbmdwYXNzd29yZA==
+
+### ------------------------------------------------------------------------
+# Non-existent user (401 Unauthorized)
+GET {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers
+Authorization: Basic bm9uZXhpc3RpbmdAc3BhY2VmYXJlci5jb206cGFzc3dvcmQ=
+
+### ------------------------------------------------------------------------
+# Junior user tries to delete a Spacefarer (403 Forbidden)
+# First retrieve an existing Spacefarer ID
+# @name getSpacefarer
+GET {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers
+Authorization: Basic anVuaW9yQHNwYWNlLmNvbTpwYXNzd29yZA==
+
+###
+@spacefarerId = {{getSpacefarer.response.body.value[0].ID}}
+
+###
+DELETE {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers({{spacefarerId}})
+Authorization: Basic anVuaW9yQHNwYWNlLmNvbTpwYXNzd29yZA==

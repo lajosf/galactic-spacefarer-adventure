@@ -1,8 +1,11 @@
 {
   "name": "galactic-spacefarer-adventure",
   "version": "1.0.0",
-  "description": "A simple CAP project.",
-  "repository": "<Add your repository here>",
+  "description": "A challange task",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lajosf/galactic_spacefarer_adventure.git"
+  },
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
@@ -21,5 +24,42 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
-  "type": "module"
+  "type": "module",
+  "cds": {
+    "requires": {
+      "auth": {
+        "kind": "basic",
+        "users": {
+          "admin@spacefarer.com": {
+            "password": "password",
+            "roles": [
+              "admin"
+            ],
+            "planet": "ALL"
+          },
+          "junior@space.com": {
+            "password": "password",
+            "roles": [
+              "SpacefarerUser"
+            ],
+            "planet": "Earth"
+          },
+          "medior@space.com": {
+            "password": "password",
+            "roles": [
+              "SpacefarerUser"
+            ],
+            "planet": "Earth"
+          },
+          "senior@space.com": {
+            "password": "password",
+            "roles": [
+              "SpacefarerUser"
+            ],
+            "planet": "Mars"
+          }
+        }
+      }
+    }
+  }
 }
