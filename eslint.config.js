@@ -1,12 +1,11 @@
-import globals from 'globals';
-import js from '@eslint/js';
+const globals = require('globals');
 
-export default [
+module.exports = [
     {
         files: ['**/*.js'],
         languageOptions: {
             ecmaVersion: 2022,
-            sourceType: 'module',
+            sourceType: 'commonjs',
             globals: {
                 ...globals.node,
                 ...globals.jest,
@@ -18,7 +17,6 @@ export default [
             }
         },
         rules: {
-            ...js.configs.recommended.rules,
             'indent': ['error', 4],
             'linebreak-style': ['error', 'unix'],
             'quotes': ['error', 'single'],
