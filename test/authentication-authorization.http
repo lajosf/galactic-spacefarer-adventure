@@ -33,7 +33,9 @@ Content-Type: application/json
     "position_ID": "40493cf4-e1af-4ca7-bbc1-941bd80bd97e"
 }
 
-### User with SpacefarerUser role PATCHs own stardust collection
+### ------------------------------------------------------------------------
+# User with SpacefarerUser role PATCHs own stardust collection
+
 PATCH {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers(70416e33-224b-4970-a624-168662918af5)
 Authorization: Basic junior@space.com:password
 Content-Type: application/json
@@ -42,7 +44,8 @@ Content-Type: application/json
     "stardustCollection": 21
 }
 
-### User with SpacefarerUser role PATCHs own spacesuit color
+### ------------------------------------------------------------------------
+# User with SpacefarerUser role PATCHs own spacesuit color
 PATCH {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers(70416e33-224b-4970-a624-168662918af5)
 Authorization: Basic junior@space.com:password
 Content-Type: application/json
@@ -51,7 +54,8 @@ Content-Type: application/json
     "spacesuitColor": "Gold"
 }
 
-### Admin PATCHs any field
+### ------------------------------------------------------------------------
+# Admin PATCHs any field
 PATCH {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers(70416e33-224b-4970-a624-168662918af5)
 Authorization: Basic admin@space.com:password
 Content-Type: application/json
@@ -102,24 +106,3 @@ Authorization: Basic nonexisting@spacefarer.com:password
 
 DELETE {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers(8116360c-74fa-431c-97a0-60e667c179e9)
 Authorization: Basic junior@space.com:password
-
-### ------------------------------------------------------------------------
-# User with SpacefarerUser role tries to PATCH forbidden field
-PATCH {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers(70416e33-224b-4970-a624-168662918af5)
-Authorization: Basic junior@space.com:password
-Content-Type: application/json
-
-{
-    "name": "New Name Attempt"
-}
-
-### ------------------------------------------------------------------------
-# User with SpacefarerUser role tries to PATCH multiple fields including forbidden ones
-PATCH {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers(70416e33-224b-4970-a624-168662918af5)
-Authorization: Basic junior@space.com:password
-Content-Type: application/json
-
-{
-    "stardustCollection": 30,
-    "wormholeNavigationSkill": 5
-}

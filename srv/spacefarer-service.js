@@ -8,51 +8,50 @@ const LOG = cds.log('spacefarer-service');
  * Implementation for Galactic Spacefarer Service
  */
 class SpacefarerService extends cds.ApplicationService {
-    async init() {
+    init() {
         const app = cds.app;
-
-        // Initialize parent
-        await super.init();
-
-        // Setup security middleware
         setupSecurityMiddleware(app);
 
         // Password hashing before CREATE
         this.before('CREATE', 'GalacticSpacefarers', async (req) => {
+            await this.validateStardustCollection(req);
             if (req.data.password) {
                 req.data.password = passwordService.hashPassword(req.data.password);
                 LOG.debug('Password hashed for user:', req.data.email);
             }
         });
 
-        // Validate PATCH operation if user is not the admin
-        this.before('PATCH', 'GalacticSpacefarers', async (req) => {
+        // Validate UPDATE operation
+        this.before(['UPDATE'], 'GalacticSpacefarers', async (req) => {
             const user = req.user;
             const isAdmin = user.roles && user.roles.admin === 1;
+
             if (!isAdmin) {
-                // User with SpacefarerUser role can only update stardust and spacesuit
                 const allowedFields = ['stardustCollection', 'spacesuitColor'];
                 const systemFieldsToIgnore = ['ID', 'modifiedAt', 'createdAt'];
 
-                const updateFields = Object.keys(req.data)
-                    .filter(field => !systemFieldsToIgnore.includes(field));
+                const updateFields = Object.keys(req.data);
 
                 const invalidFields = updateFields.filter(field => {
-                    return !allowedFields.includes(field);
+                    return !allowedFields.includes(field) && !systemFieldsToIgnore.includes(field);
                 });
 
                 if (invalidFields.length > 0) {
-                    req.error({
+                    return req.error(403, {
                         code: 'FORBIDDEN_UPDATE',
                         message: `User with SpacefarerUser role can only update: ${allowedFields.join(', ')}`,
                         target: invalidFields[0]
                     });
                 }
             }
+
+            if (req.data.stardustCollection !== undefined) {
+                await this.validateStardustCollection(req);
+            }
         });
 
         // Register event handlers
-        this.after(['READ', 'CREATE', 'PATCH', 'DELETE'], 'GalacticSpacefarers', async (data, req) => {
+        this.after(['READ', 'CREATE', 'UPDATE', 'DELETE'], 'GalacticSpacefarers', async (data, req) => {
             LOG.info('Operation performed on GalacticSpacefarers', {
                 user: req.user?.id,
                 operation: req.event,
@@ -65,7 +64,23 @@ class SpacefarerService extends cds.ApplicationService {
             if (each.password) delete each.password;
         });
 
-        await super.init();
+        return super.init();
+    }
+
+    async validateStardustCollection(req) {
+        if (req.event === 'UPDATE') {
+            const spacefarerId = req.params[0];
+            const currentSpacefarer = await SELECT.one.from('GalacticSpacefarers')
+                .where({ ID: spacefarerId });
+                
+            if (currentSpacefarer && req.data.stardustCollection < currentSpacefarer.stardustCollection) {
+                return req.error({
+                    code: 'CANNOT_DECREASE_STARDUST',
+                    message: `Cannot decrease stardust collection from ${currentSpacefarer.stardustCollection} to ${req.data.stardustCollection}`,
+                    status: 403
+                });
+            }
+        }
     }
 }
 

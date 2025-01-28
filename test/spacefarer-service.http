@@ -1,0 +1,34 @@
+# Base URL setting
+@baseUrl = http://localhost:4004
+
+### ------------------------------------------------------------------------
+# User with SpacefarerUser role tries to PATCH forbidden field
+PATCH {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers(70416e33-224b-4970-a624-168662918af5)
+Authorization: Basic junior@space.com:password
+Content-Type: application/json
+
+{
+    "name": "New Name Attempt"
+}
+
+### ------------------------------------------------------------------------
+# User with SpacefarerUser role tries to PATCH multiple fields including forbidden ones
+PATCH {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers(70416e33-224b-4970-a624-168662918af5)
+Authorization: Basic junior@space.com:password
+Content-Type: application/json
+
+{
+    "stardustCollection": 30,
+    "wormholeNavigationSkill": 5
+}
+
+### ------------------------------------------------------------------------
+# User with SpacefarerUser role PATCHs own stardust collection
+
+PATCH {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers(70416e33-224b-4970-a624-168662918af5)
+Authorization: Basic junior@space.com:password
+Content-Type: application/json
+
+{
+    "stardustCollection": 2
+}
