@@ -31,27 +31,7 @@ class SpacefarerService extends cds.ApplicationService {
                 await this.validateWormholeNavigationSkill(req);
             }
 
-            const user = req.user;
-            const isAdmin = user.roles && user.roles.admin === 1;
-
-            if (!isAdmin) {
-                const allowedFields = ['stardustCollection', 'wormholeNavigationSkill'];
-                const systemFieldsToIgnore = ['ID', 'modifiedAt', 'createdAt'];
-
-                const updateFields = Object.keys(req.data);
-
-                const invalidFields = updateFields.filter(field => {
-                    return !allowedFields.includes(field) && !systemFieldsToIgnore.includes(field);
-                });
-
-                if (invalidFields.length > 0) {
-                    return req.error(403, {
-                        code: 'FORBIDDEN_UPDATE',
-                        message: `User with SpacefarerUser role can only update: ${allowedFields.join(', ')}`,
-                        target: invalidFields[0]
-                    });
-                }
-            }
+            this.validateForbiddenFieldsNotToUpdate(req);
         });
 
         // Register event handlers
@@ -96,6 +76,31 @@ class SpacefarerService extends cds.ApplicationService {
             });
         }
     }
+
+    validateForbiddenFieldsNotToUpdate(req) {
+        const user = req.user;
+        const isAdmin = user.roles && user.roles.admin === 1;
+
+        if (!isAdmin) {
+            const allowedFields = ['stardustCollection', 'wormholeNavigationSkill'];
+            const systemFieldsToIgnore = ['ID', 'modifiedAt', 'createdAt'];
+
+            const updateFields = Object.keys(req.data);
+
+            const invalidFields = updateFields.filter(field => {
+                return !allowedFields.includes(field) && !systemFieldsToIgnore.includes(field);
+            });
+
+            if (invalidFields.length > 0) {
+                return req.error(403, {
+                    code: 'FORBIDDEN_UPDATE',
+                    message: `User with SpacefarerUser role can only update: ${allowedFields.join(', ')}`,
+                    target: invalidFields[0]
+                });
+            }
+        }
+    }
+
 }
 
 module.exports = SpacefarerService;

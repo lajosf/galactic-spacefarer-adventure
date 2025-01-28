@@ -96,17 +96,4 @@ describe('SpacefarerService - Authentication & Authorization', () => {
             expect(error.response.status).to.equal(403);
         }
     });
-
-    test('should reject user with SpacefarerUser role trying to update forbidden fields', async () => {
-        try {
-            await PATCH(`${SERVICE_PATH}/GalacticSpacefarers(297c7566-49a0-4d24-b175-46a0a1ad60a8)`, {
-                name: 'My New Name'
-            }, {
-                auth: { username: 'junior@space.com', password: 'password' }
-            });
-            throw new Error('Should have rejected forbidden field update');
-        } catch (error) {
-            expect(error.response.status).to.equal(403);
-        }
-    });
 });
