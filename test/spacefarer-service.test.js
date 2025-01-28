@@ -1,8 +1,20 @@
 const cds = require('@sap/cds');
-const { PATCH, expect } = cds.test('.').in(__dirname, '..');
+const { PATCH, POST, expect } = cds.test('.').in(__dirname, '..');
 
 describe('SpacefarerService', () => {
     const SERVICE_PATH = '/odata/v4/spacefarer';
+
+    const createSpacefarerData = () => ({
+        name: 'Friedrich Schiller',
+        email: 'junior@space.com',
+        password: 'password',
+        stardustCollection: 1,
+        wormholeNavigationSkill: 1,
+        originPlanet: 'Earth',
+        spacesuitColor: 'White',
+        department_ID: '7dacdb28-0601-40f0-8c64-cd86732db1f0',
+        position_ID: '40493cf4-e1af-4ca7-bbc1-941bd80bd97e'
+    });
 
     beforeAll(async () => {
         await cds.deploy(__dirname + '/../db/schema.cds').to('sqlite::memory:');
@@ -52,4 +64,15 @@ describe('SpacefarerService', () => {
             expect(error.response.status).to.equal(403);
         }
     });
+
+    test('should enhance wormhole navigation and stardust collection skills', async () => {
+        const data = createSpacefarerData();
+        const response = await POST(`${SERVICE_PATH}/GalacticSpacefarers`, data, {
+            auth: { username: 'admin@space.com', password: 'password' }
+        });
+        expect(response.status).to.equal(201);
+        expect(response.data.wormholeNavigationSkill).to.equal(3);
+        expect(response.data.stardustCollection).to.equal(10);
+    });
+
 });

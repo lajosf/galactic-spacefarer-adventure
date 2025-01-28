@@ -14,11 +14,14 @@ class SpacefarerService extends cds.ApplicationService {
 
         // Password hashing before CREATE
         this.before('CREATE', 'GalacticSpacefarers', async (req) => {
-            await this.validateStardustCollection(req);
             if (req.data.password) {
                 req.data.password = passwordService.hashPassword(req.data.password);
                 LOG.debug('Password hashed for user:', req.data.email);
             }
+
+            this.enhanceStardustCollection(req);
+
+            this.enhanceWormholeNavigationSkill(req);
         });
 
         // Validate UPDATE operation
@@ -49,6 +52,18 @@ class SpacefarerService extends cds.ApplicationService {
         });
 
         return super.init();
+    }
+
+    enhanceWormholeNavigationSkill(req) {
+        if (req.data.wormholeNavigationSkill < 3) {
+            req.data.wormholeNavigationSkill = 3;
+        }
+    }
+
+    enhanceStardustCollection(req) {
+        if (req.data.stardustCollection < 10) {
+            req.data.stardustCollection = 10;
+        }
     }
 
     async validateStardustCollection(req) {

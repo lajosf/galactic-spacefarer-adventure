@@ -43,3 +43,21 @@ Content-Type: application/json
 {
     "wormholeNavigationSkill": 2
 }
+
+### ------------------------------------------------------------------------
+# Enhance stardust collection and wormhole navigation skills
+POST {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers
+Authorization: Basic admin@space.com:password
+Content-Type: application/json
+
+{
+    "name": "Test Spacefarer",
+    "email": "test6@spacefarer.com",
+    "password": "password",
+    "stardustCollection": 1,
+    "wormholeNavigationSkill": 1,
+    "originPlanet": "Earth",
+    "spacesuitColor": "Red",
+    "department_ID": "7dacdb28-0601-40f0-8c64-cd86732db1f0",
+    "position_ID": "40493cf4-e1af-4ca7-bbc1-941bd80bd97e"
+}
