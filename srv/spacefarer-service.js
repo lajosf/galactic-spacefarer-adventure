@@ -23,11 +23,19 @@ class SpacefarerService extends cds.ApplicationService {
 
         // Validate UPDATE operation
         this.before(['UPDATE'], 'GalacticSpacefarers', async (req) => {
+            if (req.data.stardustCollection !== undefined) {
+                await this.validateStardustCollection(req);
+            }
+
+            if (req.data.wormholeNavigationSkill !== undefined) {
+                await this.validateWormholeNavigationSkill(req);
+            }
+
             const user = req.user;
             const isAdmin = user.roles && user.roles.admin === 1;
 
             if (!isAdmin) {
-                const allowedFields = ['stardustCollection', 'spacesuitColor'];
+                const allowedFields = ['stardustCollection', 'wormholeNavigationSkill'];
                 const systemFieldsToIgnore = ['ID', 'modifiedAt', 'createdAt'];
 
                 const updateFields = Object.keys(req.data);
@@ -43,10 +51,6 @@ class SpacefarerService extends cds.ApplicationService {
                         target: invalidFields[0]
                     });
                 }
-            }
-
-            if (req.data.stardustCollection !== undefined) {
-                await this.validateStardustCollection(req);
             }
         });
 
@@ -68,18 +72,28 @@ class SpacefarerService extends cds.ApplicationService {
     }
 
     async validateStardustCollection(req) {
-        if (req.event === 'UPDATE') {
-            const spacefarerId = req.params[0];
-            const currentSpacefarer = await SELECT.one.from('GalacticSpacefarers')
-                .where({ ID: spacefarerId });
-                
-            if (currentSpacefarer && req.data.stardustCollection < currentSpacefarer.stardustCollection) {
-                return req.error({
-                    code: 'CANNOT_DECREASE_STARDUST',
-                    message: `Cannot decrease stardust collection from ${currentSpacefarer.stardustCollection} to ${req.data.stardustCollection}`,
-                    status: 403
-                });
-            }
+        const spacefarerId = req.params[0];
+        const currentSpacefarer = await SELECT.one.from('GalacticSpacefarers')
+            .where({ ID: spacefarerId });
+
+        if (currentSpacefarer && req.data.stardustCollection < currentSpacefarer.stardustCollection) {
+            return req.error(403, {
+                code: 'CANNOT_DECREASE_STARDUST',
+                message: `Cannot decrease stardust collection from ${currentSpacefarer.stardustCollection} to ${req.data.stardustCollection}`
+            });
+        }
+    }
+
+    async validateWormholeNavigationSkill(req) {
+        const spacefarerId = req.params[0];
+        const currentSpacefarer = await SELECT.one.from('GalacticSpacefarers')
+            .where({ ID: spacefarerId });
+
+        if (currentSpacefarer && req.data.wormholeNavigationSkill < currentSpacefarer.wormholeNavigationSkill) {
+            return req.error(403, {
+                code: 'CANNOT_DECREASE_WHORMHOLE_NAVIGATION_SKILL',
+                message: `Cannot decrease wormhole navigation skill from ${currentSpacefarer.wormholeNavigationSkill} to ${req.data.wormholeNavigationSkill}`
+            });
         }
     }
 }

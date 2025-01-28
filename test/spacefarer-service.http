@@ -19,11 +19,11 @@ Content-Type: application/json
 
 {
     "stardustCollection": 30,
-    "wormholeNavigationSkill": 5
+    "spacesuitColor": "White"
 }
 
 ### ------------------------------------------------------------------------
-# User with SpacefarerUser role PATCHs own stardust collection
+# Stardust collection cannot be decreased!
 
 PATCH {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers(70416e33-224b-4970-a624-168662918af5)
 Authorization: Basic junior@space.com:password
@@ -31,4 +31,15 @@ Content-Type: application/json
 
 {
     "stardustCollection": 2
+}
+
+### ------------------------------------------------------------------------
+# Whormhole navigation skill cannot be decreased!
+
+PATCH {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers(70416e33-224b-4970-a624-168662918af5)
+Authorization: Basic senior@space.com:password
+Content-Type: application/json
+
+{
+    "wormholeNavigationSkill": 2
 }
