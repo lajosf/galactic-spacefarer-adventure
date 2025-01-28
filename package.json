@@ -39,7 +39,7 @@
       "auth": {
         "kind": "basic",
         "users": {
-          "admin@spacefarer.com": {
+          "admin@space.com": {
             "password": "password",
             "roles": [
               "admin"

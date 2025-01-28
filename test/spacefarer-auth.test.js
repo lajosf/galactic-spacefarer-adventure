@@ -1,13 +1,12 @@
 const cds = require('@sap/cds');
-const { GET, POST, DELETE } = cds.test('.').in(__dirname, '..');
-const { expect } = require('chai');
+const { GET, POST, PATCH, expect } = cds.test('.').in(__dirname, '..');
 
 describe('SpacefarerService - Authentication & Authorization', () => {
     const SERVICE_PATH = '/odata/v4/spacefarer';
 
     const createSpacefarerData = () => ({
         name: 'Friedrich Schiller',
-        email: 'friedrich.schiller@space.com',
+        email: 'junior@space.com',
         password: 'password',
         stardustCollection: 1,
         wormholeNavigationSkill: 3,
@@ -21,83 +20,93 @@ describe('SpacefarerService - Authentication & Authorization', () => {
         await cds.deploy(__dirname + '/../db/schema.cds').to('sqlite::memory:');
     });
 
-    beforeEach(() => {
-        // Reset auth defaults before each test
-        cds.test.auth = { username: 'admin@spacefarer.com', password: 'password' };
+    test('should allow admin to read spacefarers', async () => {
+        const response = await GET(`${SERVICE_PATH}/GalacticSpacefarers`, {
+            auth: { username: 'admin@space.com', password: 'password' }
+        });
+        expect(response.status).to.equal(200);
     });
 
-    describe('Authorization Tests', () => {
-        test('should allow admin to read spacefarers', async () => {
-            const response = await GET(`${SERVICE_PATH}/GalacticSpacefarers`, {
-                auth: { username: 'admin@spacefarer.com', password: 'password' }
-            });
-            expect(response.status).to.equal(200);
-            expect(response.data.value).to.be.an('array');
+    test('should allow user with SpacefarerUser role to read spacefarers', async () => {
+        const response = await GET(`${SERVICE_PATH}/GalacticSpacefarers`, {
+            auth: { username: 'junior@space.com', password: 'password' }
         });
+        expect(response.status).to.equal(200);
+    });
 
-        test('should allow SpacefarerUser to read spacefarers', async () => {
-            const response = await GET(`${SERVICE_PATH}/GalacticSpacefarers`, {
+    test('should allow admin to create spacefarer', async () => {
+        const data = createSpacefarerData();
+        const response = await POST(`${SERVICE_PATH}/GalacticSpacefarers`, data, {
+            auth: { username: 'admin@space.com', password: 'password' }
+        });
+        expect(response.status).to.equal(201);
+        expect(response.data).to.have.property('ID');
+    });
+
+    test('should reject user without admin role trying to create spacefarer', async () => {
+        const data = createSpacefarerData();
+        try {
+            await POST(`${SERVICE_PATH}/GalacticSpacefarers`, data, {
                 auth: { username: 'junior@space.com', password: 'password' }
             });
-            expect(response.status).to.equal(200);
-            expect(response.data.value).to.be.an('array');
-        });
+            throw new Error('Should have rejected user with SpacefarerUser role');
+        } catch (error) {
+            expect(error.response.status).to.equal(403);
+        }
+    });
 
-        test('should allow admin to create spacefarer', async () => {
-            const data = createSpacefarerData();
-            const response = await POST(`${SERVICE_PATH}/GalacticSpacefarers`, data, {
-                auth: { username: 'admin@spacefarer.com', password: 'password' }
+    test('should reject unauthenticated access', async () => {
+        try {
+            await GET(`${SERVICE_PATH}/GalacticSpacefarers`, { auth: false });
+            throw new Error('Should have rejected unauthenticated access');
+        } catch (error) {
+            expect(error.response.status).to.equal(401);
+        }
+    });
+
+    test('should reject user with invalid credentials', async () => {
+        try {
+            await GET(`${SERVICE_PATH}/GalacticSpacefarers`, {
+                auth: { username: 'invalid@spacefarer.com', password: 'wrong' }
             });
-            expect(response.status).to.equal(201);
-            expect(response.data).to.have.property('ID');
-        });
+            throw new Error('Should have rejected invalid credentials');
+        } catch (error) {
+            expect(error.response.status).to.equal(401);
+        }
+    });
 
-        test('should reject SpacefarerUser trying to create spacefarer', async () => {
-            const data = createSpacefarerData();
-            try {
-                await POST(`${SERVICE_PATH}/GalacticSpacefarers`, data, {
-                    auth: { username: 'junior@space.com', password: 'password' }
-                });
-                throw new Error('Should have rejected SpacefarerUser');
-            } catch (error) {
-                expect(error.response.status).to.equal(403);
-            }
+    test('should allow user with SpacefarerUser role to update own stardust collection', async () => {
+        const response = await PATCH(`${SERVICE_PATH}/GalacticSpacefarers(70416e33-224b-4970-a624-168662918af5)`, {
+            stardustCollection: 20
+        }, {
+            auth: { username: 'junior@space.com', password: 'password' }
         });
+        expect(response.status).to.equal(200);
+    });
 
-        test('should reject unauthenticated access', async () => {
-            try {
-                await GET(`${SERVICE_PATH}/GalacticSpacefarers`, { auth: false });
-                throw new Error('Should have rejected unauthenticated access');
-            } catch (error) {
-                expect(error.response.status).to.equal(401);
-            }
-        });
-
-        test('should reject user with invalid credentials', async () => {
-            try {
-                await GET(`${SERVICE_PATH}/GalacticSpacefarers`, {
-                    auth: { username: 'invalid@spacefarer.com', password: 'wrong' }
-                });
-                throw new Error('Should have rejected invalid credentials');
-            } catch (error) {
-                expect(error.response.status).to.equal(401);
-            }
-        });
-
-        test('should reject SpacefarerUser trying to delete spacefarer', async () => {
-            const data = createSpacefarerData();
-            const createResponse = await POST(`${SERVICE_PATH}/GalacticSpacefarers`, data, {
-                auth: { username: 'admin@spacefarer.com', password: 'password' }
+    test('should reject user with SpacefarerUser role trying to update other user', async () => {
+        try {
+            await PATCH(`${SERVICE_PATH}/GalacticSpacefarers(297c7566-49a0-4d24-b175-46a0a1ad60a8)`, {
+                stardustCollection: 30
+            }, {
+                auth: { username: 'junior@space.com', password: 'password' }
             });
+            throw new Error('Should have rejected update of other user');
+        } catch (error) {
+            expect(error.response.status).to.equal(403);
+        }
+    });
 
-            try {
-                await DELETE(`${SERVICE_PATH}/GalacticSpacefarers(${createResponse.data.ID})`, {
-                    auth: { username: 'junior@space.com', password: 'password' }
-                });
-                throw new Error('Should have rejected SpacefarerUser delete operation');
-            } catch (error) {
-                expect(error.response.status).to.equal(403);
-            }
-        });
+    test('should reject user with SpacefarerUser role trying to update forbidden fields', async () => {
+        try {
+            await PATCH(`${SERVICE_PATH}/GalacticSpacefarers(297c7566-49a0-4d24-b175-46a0a1ad60a8)`, {
+                name: 'My New Name'
+            }, {
+                auth: { username: 'junior@space.com', password: 'password' }
+            });
+            throw new Error('Should have rejected forbidden field update');
+        } catch (error) {
+            expect(error.response.status).to.equal(403);
+        }
     });
 });

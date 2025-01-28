@@ -20,7 +20,7 @@ function setupSecurityMiddleware(app) {
     // CORS configuration
     app.use(cors({
         origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:4004'],
-        methods: ['GET', 'POST', 'UPDATE', 'DELETE'],
+        methods: ['GET', 'POST', 'PATCH', 'DELETE'],
         allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true
     }));

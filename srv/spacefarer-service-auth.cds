@@ -10,12 +10,12 @@ annotate GalacticSpacefarers with @(restrict: [
         to   : 'SpacefarerUser'
     },
     {
-        grant: [
-            'READ',
-            'CREATE',
-            'UPDATE',
-            'DELETE'
-        ],
+        grant: ['UPDATE'],
+        where: 'email = $user.id', // Mocked auth user id is the email
+        to   : 'SpacefarerUser'
+    },
+    {
+        grant: ['READ', 'CREATE', 'PATCH', 'DELETE'],
         to   : 'admin'
     }
 ]);

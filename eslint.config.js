@@ -12,7 +12,7 @@ module.exports = [
                 cds: true,
                 SELECT: true,
                 INSERT: true,
-                UPDATE: true,
+                PATCH: true,
                 DELETE: true
             }
         },

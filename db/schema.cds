@@ -11,6 +11,8 @@ entity GalacticSpacefarers {
         spacesuitColor          : String(60) @mandatory;
         department              : Association to Departments;
         position                : Association to Positions;
+        createdAt               : Timestamp @cds.on.insert: $now;
+        modifiedAt              : Timestamp @cds.on.update: $now;
 }
 
 entity Departments {
