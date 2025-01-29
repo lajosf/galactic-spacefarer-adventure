@@ -5,48 +5,33 @@ annotate service.GalacticSpacefarers with @(
         Data : [
             {
                 $Type : 'UI.DataField',
-                Label : 'name',
+                Label : '{i18n>Name}',
                 Value : name,
             },
             {
                 $Type : 'UI.DataField',
-                Label : 'password',
-                Value : password,
-            },
-            {
-                $Type : 'UI.DataField',
-                Label : 'email',
+                Label : '{i18n>CosmicNotificationEmail}',
                 Value : email,
             },
             {
                 $Type : 'UI.DataField',
-                Label : 'stardustCollection',
+                Label : '{i18n>StardustCollection}',
                 Value : stardustCollection,
             },
             {
                 $Type : 'UI.DataField',
-                Label : 'wormholeNavigationSkill',
+                Label : '{i18n>WormholeNavigationSkill}',
                 Value : wormholeNavigationSkill,
             },
             {
                 $Type : 'UI.DataField',
-                Label : 'originPlanet',
+                Label : '{i18n>OriginPlanet}',
                 Value : originPlanet,
             },
             {
                 $Type : 'UI.DataField',
-                Label : 'spacesuitColor',
+                Label : '{i18n>SpacesuitColor1}',
                 Value : spacesuitColor,
-            },
-            {
-                $Type : 'UI.DataField',
-                Label : 'createdAt',
-                Value : createdAt,
-            },
-            {
-                $Type : 'UI.DataField',
-                Label : 'modifiedAt',
-                Value : modifiedAt,
             },
         ],
     },
@@ -79,6 +64,18 @@ annotate service.GalacticSpacefarers with @(
         spacesuitColor,
         stardustCollection,
     ],
+    UI.HeaderInfo : {
+        Title : {
+            $Type : 'UI.DataField',
+            Value : name,
+        },
+        TypeName : '',
+        TypeNamePlural : '',
+        Description : {
+            $Type : 'UI.DataField',
+            Value : 'Spacefarer details',
+        },
+    },
 );
 
 annotate service.GalacticSpacefarers with {
