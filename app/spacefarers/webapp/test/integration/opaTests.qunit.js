@@ -2,8 +2,8 @@ sap.ui.require(
     [
         'sap/fe/test/JourneyRunner',
         'com/aldi/challange/spacefarers/test/integration/FirstJourney',
-		'com/aldi/challange/spacefarers/test/integration/pages/GalacticSpacefarersList',
-		'com/aldi/challange/spacefarers/test/integration/pages/GalacticSpacefarersObjectPage'
+        'com/aldi/challange/spacefarers/test/integration/pages/GalacticSpacefarersList',
+        'com/aldi/challange/spacefarers/test/integration/pages/GalacticSpacefarersObjectPage'
     ],
     function(JourneyRunner, opaJourney, GalacticSpacefarersList, GalacticSpacefarersObjectPage) {
         'use strict';
@@ -16,8 +16,8 @@ sap.ui.require(
         JourneyRunner.run(
             {
                 pages: { 
-					onTheGalacticSpacefarersList: GalacticSpacefarersList,
-					onTheGalacticSpacefarersObjectPage: GalacticSpacefarersObjectPage
+                    onTheGalacticSpacefarersList: GalacticSpacefarersList,
+                    onTheGalacticSpacefarersObjectPage: GalacticSpacefarersObjectPage
                 }
             },
             opaJourney.run

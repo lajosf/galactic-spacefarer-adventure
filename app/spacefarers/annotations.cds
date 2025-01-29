@@ -66,24 +66,18 @@ annotate service.GalacticSpacefarers with @(
         },
         {
             $Type : 'UI.DataField',
-            Label : 'password',
-            Value : password,
-        },
-        {
-            $Type : 'UI.DataField',
-            Label : 'email',
-            Value : email,
-        },
-        {
-            $Type : 'UI.DataField',
             Label : 'stardustCollection',
             Value : stardustCollection,
         },
         {
             $Type : 'UI.DataField',
-            Label : 'wormholeNavigationSkill',
-            Value : wormholeNavigationSkill,
+            Value : spacesuitColor,
+            Label : 'spacesuitColor',
         },
+    ],
+    UI.SelectionFields : [
+        spacesuitColor,
+        stardustCollection,
     ],
 );
 
@@ -145,5 +139,13 @@ annotate service.GalacticSpacefarers with {
             },
         ],
     }
+};
+
+annotate service.GalacticSpacefarers with {
+    spacesuitColor @Common.Label : '{i18n>SpacesuitColor}'
+};
+
+annotate service.GalacticSpacefarers with {
+    stardustCollection @Common.Label : '{i18n>StardustCollection}'
 };
 
