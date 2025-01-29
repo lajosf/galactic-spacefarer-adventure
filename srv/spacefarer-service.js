@@ -1,5 +1,6 @@
 const cds = require('@sap/cds');
 const { passwordService } = require('./lib/password-service');
+const { mailService } = require('./lib/mail-service');
 const { setupSecurityMiddleware } = require('./middleware/security');
 
 const LOG = cds.log('spacefarer-service');
@@ -35,6 +36,10 @@ class SpacefarerService extends cds.ApplicationService {
             }
 
             this.validateForbiddenFieldsNotToUpdate(req);
+        });
+
+        this.after(['CREATE'], 'GalacticSpacefarers', async () => {
+            mailService.sendWelcomeEmail();
         });
 
         // Register event handlers
