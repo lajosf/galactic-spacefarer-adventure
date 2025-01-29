@@ -7,13 +7,17 @@ function setupSecurityMiddleware(app) {
     // Security headers
     app.use(helmet());
 
+    // Trust first proxy for rate limiting
+    app.set('trust proxy', 1);
+
     // Rate limiting
     const limiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutes
         max: 100, // limit each IP to 100 requests per windowMs
         message: 'Too many requests from this cosmic sector, please try again later',
         standardHeaders: true,
-        legacyHeaders: false
+        legacyHeaders: false,
+        validate: { xForwardedForHeader: false }
     });
     app.use(limiter);
 

@@ -61,3 +61,13 @@ Content-Type: application/json
     "department_ID": "7dacdb28-0601-40f0-8c64-cd86732db1f0",
     "position_ID": "40493cf4-e1af-4ca7-bbc1-941bd80bd97e"
 }
+
+### ------------------------------------------------------------------------
+# User tries to PATCH another user's record (403 Forbidden - Can only edit own records)
+PATCH {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers(8116360c-74fa-431c-97a0-60e667c179e9)
+Authorization: Basic junior@space.com:password
+Content-Type: application/json
+
+{
+    "stardustCollection": 30
+}

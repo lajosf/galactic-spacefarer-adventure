@@ -2,14 +2,24 @@ const cds = require('@sap/cds');
 const { passwordService } = require('./lib/password-service');
 const { mailService } = require('./lib/mail-service');
 const { setupSecurityMiddleware } = require('./middleware/security');
+const rateLimit = require('express-rate-limit');
 
 const LOG = cds.log('spacefarer-service');
+
+// Configure express-rate-limit
+cds.on('bootstrap', app => {
+    app.set('trust proxy', 1);
+    app.use(rateLimit({
+        validate: { xForwardedForHeader: false }
+    }));
+});
 
 /**
  * Implementation for Galactic Spacefarer Service
  */
 class SpacefarerService extends cds.ApplicationService {
     init() {
+        const { GalacticSpacefarers } = this.entities;
         const app = cds.app;
         setupSecurityMiddleware(app);
 
@@ -36,6 +46,19 @@ class SpacefarerService extends cds.ApplicationService {
             }
 
             this.validateForbiddenFieldsNotToUpdate(req);
+        });
+
+        this.before('PATCH', 'GalacticSpacefarers', async (req) => {
+            const user = req.user;
+            if (!user) return req.error(403, 'Not authorized');
+
+            // Validate user permissions
+            if (!user.roles.includes('admin')) {
+                const entity = await SELECT.one.from(GalacticSpacefarers).where({ ID: req.data.ID });
+                if (entity.email !== user.id) {
+                    return req.error(403, 'Can only edit own records');
+                }
+            }
         });
 
         this.after(['CREATE'], 'GalacticSpacefarers', async () => {
