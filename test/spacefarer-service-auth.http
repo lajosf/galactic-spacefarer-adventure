@@ -5,6 +5,8 @@
 #                            POSITIVE TEST CASES                           #
 ############################################################################
 
+# Disable draft mode on GalacticSpacefarers before manual test
+
 ### ------------------------------------------------------------------------
 # Admin retrieves all Spacefarers
 GET {{baseUrl}}/odata/v4/spacefarer/GalacticSpacefarers
@@ -25,8 +27,8 @@ Content-Type: application/json
     "name": "Test Spacefarer",
     "email": "test6@spacefarer.com",
     "password": "password",
-    "stardustCollection": 5,
-    "wormholeNavigationSkill": 3,
+    "stardustCollection": 1,
+    "wormholeNavigationSkill": 1,
     "originPlanet": "Earth",
     "spacesuitColor": "Red",
     "department_ID": "7dacdb28-0601-40f0-8c64-cd86732db1f0",

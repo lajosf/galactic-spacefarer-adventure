@@ -23,7 +23,6 @@ class SpacefarerService extends cds.ApplicationService {
         const app = cds.app;
         setupSecurityMiddleware(app);
 
-        // Password hashing before CREATE
         this.before('CREATE', 'GalacticSpacefarers', async (req) => {
             if (req.data.password) {
                 req.data.password = passwordService.hashPassword(req.data.password);

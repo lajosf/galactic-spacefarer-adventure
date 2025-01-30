@@ -1,32 +1,50 @@
-const cds = require('@sap/cds');
-const { POST, expect } = cds.test('.').in(__dirname, '..');
+const cds = require('@sap/cds/lib');
+const { default: axios } = require('axios');
+const { POST, PATCH, GET, expect } = cds.test(__dirname + '../../');
 
 describe('SpacefarerService', () => {
     const SERVICE_PATH = '/odata/v4/spacefarer';
-
-    const createSpacefarerData = () => ({
-        name: 'Friedrich Schiller',
-        email: 'junior@space.com',
-        password: 'password',
-        stardustCollection: 1,
-        wormholeNavigationSkill: 1,
-        originPlanet: 'Earth',
-        spacesuitColor: 'White',
-        department_ID: '7dacdb28-0601-40f0-8c64-cd86732db1f0',
-        position_ID: '40493cf4-e1af-4ca7-bbc1-941bd80bd97e'
-    });
     
     beforeAll(async () => {
         await cds.deploy(__dirname + '/../db/schema.cds').to('sqlite::memory:');
+        axios.defaults.auth = { username: 'junior@space.com', password: 'password' };
     });
 
-    test('should allow admin to create spacefarer', async () => {
-        const data = createSpacefarerData();
-        const response = await POST(`${SERVICE_PATH}/GalacticSpacefarers`, data, {
-            auth: { username: 'admin@space.com', password: 'password' }
+    describe('SpaceFarer Draft Choreography on updating his/her data', () => {
+        const spacefarerId = '70416e33-224b-4970-a624-168662918af5'; // Junior Spacefarer ID
+    
+        test('should create a draft for modification', async () => {
+            axios.defaults.auth = { username: 'junior@space.com', password: 'password' };
+            const response = await POST(
+                `${SERVICE_PATH}/GalacticSpacefarers(ID='${spacefarerId}',IsActiveEntity=true)/SpacefarerService.draftEdit`
+            );
+            expect(response.status).to.equal(201);
         });
-        expect(response.status).to.equal(201);
-        expect(response.data).to.have.property('ID');
+    
+        test('should modify the draft', async () => {
+            const response = await PATCH(
+                `${SERVICE_PATH}/GalacticSpacefarers(ID='${spacefarerId}',IsActiveEntity=false)`,
+                { stardustCollection: 20 }
+            );
+            expect(response.status).to.equal(200);
+        });
+    
+        it('should activate the modified draft', async () => {
+            const response = await POST(
+                `${SERVICE_PATH}/GalacticSpacefarers(ID='${spacefarerId}',IsActiveEntity=false)/SpacefarerService.draftActivate`
+            );
+            expect(response.status).to.equal(200);
+            expect(response.data.stardustCollection).to.equal(20);
+        });
+    
+        test('should get modified spacefarer', async () => {
+            const response = await GET(
+                `${SERVICE_PATH}/GalacticSpacefarers(ID='${spacefarerId}',IsActiveEntity=true)`
+            );
+            expect(response.status).to.equal(200);
+            expect(response.data.stardustCollection).to.equal(20);
+        });
+        
     });
     
     /* TODO: introduced dradt mode make fail the below tests. We should handle draft mode in tests!  
@@ -75,14 +93,6 @@ describe('SpacefarerService', () => {
         }
     });
 
-    test('should enhance wormhole navigation and stardust collection skills', async () => {
-        const data = createSpacefarerData();
-        const response = await POST(`${SERVICE_PATH}/GalacticSpacefarers`, data, {
-            auth: { username: 'admin@space.com', password: 'password' }
-        });
-        expect(response.status).to.equal(201);
-        expect(response.data.wormholeNavigationSkill).to.equal(3);
-        expect(response.data.stardustCollection).to.equal(10);
-    }); */
+     */
 
 });

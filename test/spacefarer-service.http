@@ -1,3 +1,5 @@
+# Disable draft mode on GalacticSpacefarers before manual test
+
 # Base URL setting
 @baseUrl = http://localhost:4004
 
