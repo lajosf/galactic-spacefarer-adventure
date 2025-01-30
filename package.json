@@ -44,29 +44,34 @@
             "password": "password",
             "roles": [
               "admin"
-            ],
-            "planet": "ALL"
+            ]
           },
           "junior@space.com": {
             "password": "password",
             "roles": [
               "SpacefarerUser"
             ],
-            "planet": "Earth"
+            "attr": {
+              "originPlanet": "Earth"
+            }
           },
           "medior@space.com": {
             "password": "password",
             "roles": [
               "SpacefarerUser"
             ],
-            "planet": "Earth"
+            "attr": {
+              "originPlanet": "Earth"
+            }
           },
           "senior@space.com": {
             "password": "password",
             "roles": [
               "SpacefarerUser"
             ],
-            "planet": "Mars"
+            "attr": {
+              "originPlanet": "Mars"
+            }
           }
         }
       }

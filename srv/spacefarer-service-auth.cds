@@ -7,6 +7,7 @@ using {
 annotate GalacticSpacefarers with @(restrict: [
     {
         grant: ['READ'],
+        where: 'originPlanet = $user.originPlanet',
         to   : 'SpacefarerUser'
     },
     {

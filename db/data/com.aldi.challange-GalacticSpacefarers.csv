@@ -1,4 +1,4 @@
 ID,name,password,email,stardustCollection,wormholeNavigationSkill,originPlanet,spacesuitColor,department_ID,position_ID,createdAt
 70416e33-224b-4970-a624-168662918af5,Junior Spacefarer,cGFzc3dvcmQ=,junior@space.com,10,1,Earth,White,7dacdb28-0601-40f0-8c64-cd86732db1f0,40493cf4-e1af-4ca7-bbc1-941bd80bd97e,2024-01-28T05:00:00Z
-297c7566-49a0-4d24-b175-46a0a1ad60a8,Medior Spacefarer,cGFzc3dvcmQ=,medior@space.com,150,4,Mars,Red,730d28aa-1786-46e2-9e53-763c913a7ed8,4c1db446-784c-46fd-ba2c-8ce360dc4dd3,2024-01-28T05:10:00Z
-8116360c-74fa-431c-97a0-60e667c179e9,Senior Spacefarer,cGFzc3dvcmQ=,senior@space.com,500,7,Planet Yup,Gold,3155aebe-8da6-43b8-8db0-1d2d52eadcbc,9d217172-9bfc-4bad-8f61-ba9aaa0e9228,2024-01-28T05:20:00Z
+297c7566-49a0-4d24-b175-46a0a1ad60a8,Medior Spacefarer,cGFzc3dvcmQ=,medior@space.com,150,4,Earth,Red,730d28aa-1786-46e2-9e53-763c913a7ed8,4c1db446-784c-46fd-ba2c-8ce360dc4dd3,2024-01-28T05:10:00Z
+8116360c-74fa-431c-97a0-60e667c179e9,Senior Spacefarer,cGFzc3dvcmQ=,senior@space.com,500,7,Mars,Gold,3155aebe-8da6-43b8-8db0-1d2d52eadcbc,9d217172-9bfc-4bad-8f61-ba9aaa0e9228,2024-01-28T05:20:00Z

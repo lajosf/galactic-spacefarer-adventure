@@ -27,11 +27,15 @@ describe('SpacefarerService - Authentication & Authorization', () => {
         expect(response.status).to.equal(200);
     });
 
-    test('should allow user with SpacefarerUser role to read spacefarers', async () => {
-        const response = await GET(`${SERVICE_PATH}/GalacticSpacefarers`, {
+    test('should only return spacefarers from same origin planet', async () => {
+        const earthResponse = await GET(`${SERVICE_PATH}/GalacticSpacefarers`, {
             auth: { username: 'junior@space.com', password: 'password' }
         });
-        expect(response.status).to.equal(200);
+        expect(earthResponse.status).to.equal(200);
+        expect(earthResponse.data.value).to.have.length(2);
+        earthResponse.data.value.forEach(spacefarer => {
+            expect(spacefarer.originPlanet).to.equal('Earth');
+        });
     });
 
     test('should reject user without admin role trying to create spacefarer', async () => {
