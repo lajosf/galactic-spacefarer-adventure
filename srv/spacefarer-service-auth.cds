@@ -4,6 +4,9 @@ using {
     SpacefarerService.Positions
 } from './spacefarer-service';
 
+/**
+ * Galactic Spacefarer Service authorizations
+ */
 annotate GalacticSpacefarers with @(restrict: [
     {
         grant: ['READ'],
@@ -21,6 +24,7 @@ annotate GalacticSpacefarers with @(restrict: [
     }
 ]);
 
+// Draft mode enabling for Spacefarers
 annotate GalacticSpacefarers with @odata.draft.enabled;
 annotate Departments with @readonly;
 annotate Positions with @readonly;
