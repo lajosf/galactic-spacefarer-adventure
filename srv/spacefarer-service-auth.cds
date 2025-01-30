@@ -20,5 +20,6 @@ annotate GalacticSpacefarers with @(restrict: [
     }
 ]);
 
+annotate GalacticSpacefarers with @odata.draft.enabled;
 annotate Departments with @readonly;
 annotate Positions with @readonly;

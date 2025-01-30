@@ -18,7 +18,7 @@ cds.on('bootstrap', app => {
  * Implementation for Galactic Spacefarer Service
  */
 class SpacefarerService extends cds.ApplicationService {
-    init() {
+    async init() {
         const { GalacticSpacefarers } = this.entities;
         const app = cds.app;
         setupSecurityMiddleware(app);
@@ -35,29 +35,41 @@ class SpacefarerService extends cds.ApplicationService {
             this.enhanceWormholeNavigationSkill(req);
         });
 
-        // Validate UPDATE operation
-        this.before(['UPDATE'], 'GalacticSpacefarers', async (req) => {
-            if (req.data.stardustCollection !== undefined) {
-                await this.validateStardustCollection(req);
-            }
-
-            if (req.data.wormholeNavigationSkill !== undefined) {
-                await this.validateWormholeNavigationSkill(req);
-            }
-
-            this.validateForbiddenFieldsNotToUpdate(req);
-        });
-
-        this.before('PATCH', 'GalacticSpacefarers', async (req) => {
+        // Validate UPDATE operations
+        this.before('UPDATE', 'GalacticSpacefarers', async (req) => {
             const user = req.user;
             if (!user) return req.error(403, 'Not authorized');
 
+            // Skip validation for draft operations
+            if (req.data.IsActiveEntity === false) {
+                return;
+            }
+
             // Validate user permissions
-            if (!user.roles.includes('admin')) {
-                const entity = await SELECT.one.from(GalacticSpacefarers).where({ ID: req.data.ID });
-                if (entity.email !== user.id) {
+            if (!user.is('admin')) {
+                const entity = await SELECT.from(GalacticSpacefarers)
+                    .where({ ID: req.data.ID });
+
+                if (entity.length > 0 && entity[0].email !== user.id) {
                     return req.error(403, 'Can only edit own records');
                 }
+            }
+
+            // User cannot change password during UPDATE
+            if (req.data.password) {
+                return req.error(403, {
+                    code: 'FORBIDDEN_UPDATE',
+                    message: 'Password cannot be updated directly',
+                    target: 'password'
+                });
+            }
+
+            // Validate field values
+            if (req.data.stardustCollection !== undefined) {
+                await this.validateStardustCollection(req);
+            }
+            if (req.data.wormholeNavigationSkill !== undefined) {
+                await this.validateWormholeNavigationSkill(req);
             }
         });
 
@@ -95,52 +107,28 @@ class SpacefarerService extends cds.ApplicationService {
     }
 
     async validateStardustCollection(req) {
-        const spacefarerId = req.params[0];
-        const currentSpacefarer = await SELECT.one.from('GalacticSpacefarers')
+        const spacefarerId = req.data.ID;
+        const currentSpacefarer = await SELECT.from('GalacticSpacefarers')
             .where({ ID: spacefarerId });
 
-        if (currentSpacefarer && req.data.stardustCollection < currentSpacefarer.stardustCollection) {
+        if (currentSpacefarer.length > 0 && req.data.stardustCollection < currentSpacefarer[0].stardustCollection) {
             return req.error(403, {
                 code: 'CANNOT_DECREASE_STARDUST',
-                message: `Cannot decrease stardust collection from ${currentSpacefarer.stardustCollection} to ${req.data.stardustCollection}`
+                message: `Cannot decrease stardust collection from ${currentSpacefarer[0].stardustCollection} to ${req.data.stardustCollection}`
             });
         }
     }
 
     async validateWormholeNavigationSkill(req) {
-        const spacefarerId = req.params[0];
-        const currentSpacefarer = await SELECT.one.from('GalacticSpacefarers')
+        const spacefarerId = req.data.ID;
+        const currentSpacefarer = await SELECT.from('GalacticSpacefarers')
             .where({ ID: spacefarerId });
 
-        if (currentSpacefarer && req.data.wormholeNavigationSkill < currentSpacefarer.wormholeNavigationSkill) {
+        if (currentSpacefarer.length > 0 && req.data.wormholeNavigationSkill < currentSpacefarer[0].wormholeNavigationSkill) {
             return req.error(403, {
                 code: 'CANNOT_DECREASE_WHORMHOLE_NAVIGATION_SKILL',
-                message: `Cannot decrease wormhole navigation skill from ${currentSpacefarer.wormholeNavigationSkill} to ${req.data.wormholeNavigationSkill}`
+                message: `Cannot decrease wormhole navigation skill from ${currentSpacefarer[0].wormholeNavigationSkill} to ${req.data.wormholeNavigationSkill}`
             });
-        }
-    }
-
-    validateForbiddenFieldsNotToUpdate(req) {
-        const user = req.user;
-        const isAdmin = user.roles && user.roles.admin === 1;
-
-        if (!isAdmin) {
-            const allowedFields = ['stardustCollection', 'wormholeNavigationSkill'];
-            const systemFieldsToIgnore = ['ID', 'modifiedAt', 'createdAt'];
-
-            const updateFields = Object.keys(req.data);
-
-            const invalidFields = updateFields.filter(field => {
-                return !allowedFields.includes(field) && !systemFieldsToIgnore.includes(field);
-            });
-
-            if (invalidFields.length > 0) {
-                return req.error(403, {
-                    code: 'FORBIDDEN_UPDATE',
-                    message: `User with SpacefarerUser role can only update: ${allowedFields.join(', ')}`,
-                    target: invalidFields[0]
-                });
-            }
         }
     }
 

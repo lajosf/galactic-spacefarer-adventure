@@ -3,7 +3,7 @@ namespace com.aldi.challange;
 entity GalacticSpacefarers {
     key ID                      : UUID;
         name                    : String(100) @mandatory;
-        password                : String(100) @mandatory;
+        password                : String(100);
         email                   : String(255) @mandatory;
         stardustCollection      : Integer @mandatory @assert.range: [0, 1000000];
         wormholeNavigationSkill : Integer @mandatory @assert.range: [0, 100];
@@ -29,6 +29,6 @@ entity Positions {
         name                    : String(100) @mandatory;
         description             : String(1000);
         rank                    : Integer @mandatory @assert.range: [0, 10];
-        salary                  : Integer @assert.range: [0, null];
+        salary                  : Integer @mandatory @assert.range: [0, null];
         galacticSpacefarers     : Association to many GalacticSpacefarers on galacticSpacefarers.position = $self
 }
